@@ -4,7 +4,9 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TgBotFramework.DataStructures;
 
 namespace TgBotFramework.UpdatePipeline
 {
@@ -26,8 +28,7 @@ namespace TgBotFramework.UpdatePipeline
         {
             UpdateDelegate<TContext> handle = (context, cancellationToken) =>
             {
-                // use Logger
-                Console.WriteLine("No handler for update {0} of type {1}.", context.Update.Id, context.Update.Type);
+                Logger.LogWarning("No handler for update {0} of type {1}.", context.Update.Id, context.Update.Type);
                 return Task.FromResult(1);
             };
 
@@ -38,14 +39,13 @@ namespace TgBotFramework.UpdatePipeline
 
             return UpdateDelegate = handle;
         }
-
-
-
+        
         public IBotPipelineBuilder<TContext> Use(Func<UpdateDelegate<TContext>, UpdateDelegate<TContext>> middleware)
         {
             _components.Add(middleware);
             return this;
         }
+        
         public IBotPipelineBuilder<TContext> Use<THandler>()
             where THandler : IUpdateHandler<TContext>
         {
@@ -64,7 +64,49 @@ namespace TgBotFramework.UpdatePipeline
 
             return this;
         }
-        
+
+        internal IBotPipelineBuilder<TContext> Use(Type type)
+        {
+            if (type.GetInterfaces().All(x => x != typeof(IUpdateHandler<TContext>)))
+            {
+                //TODO better type
+                throw new Exception();
+            }
+            _components.Add(
+                next =>
+                    (context, cancellationToken) =>
+                    {
+                        if (context.Services.GetService(type) is IUpdateHandler<TContext> handler)
+                            return handler.HandleAsync(context, next, cancellationToken);
+                        else
+                            throw new NullReferenceException(
+                                $"Unable to resolve handler of type {type.FullName}"
+                            );
+                    }
+            );
+
+            return this;
+        }
+
+        internal IBotPipelineBuilder<TContext> CheckStates(SortedDictionary<string, Type> states)
+        {
+            _components.Add(next=> (context, cancellationToken) =>
+            {
+                //TODO replace with some other structure
+                var type = states.PrefixSearch(context.UserState.Stage);
+                if (type!=null && context.Services.GetService(type) is IUpdateHandler<TContext> handler)
+                {
+                    return handler.HandleAsync(context, next, cancellationToken);
+                }
+                else
+                {
+                    return next(context, cancellationToken);
+                }
+            });
+
+            return this;
+        }
+
         public IBotPipelineBuilder<TContext> Use<THandler>(THandler handler)
             where THandler : IUpdateHandler<TContext>
         {

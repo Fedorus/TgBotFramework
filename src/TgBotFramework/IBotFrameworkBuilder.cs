@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Channels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -6,35 +8,22 @@ using TgBotFramework.UpdatePipeline;
 
 namespace TgBotFramework
 {
-    public interface IBotFrameworkBuilder<out TContext> where TContext : IUpdateContext
+    public interface IBotFrameworkBuilder<TContext> where TContext : IUpdateContext
     {
-        public IServiceCollection Services { get; }
+        IServiceCollection Services { get; }
+        IUpdateContext Context { get; set; }
+        UpdatePipelineSettings<TContext> UpdatePipelineSettings { get; set; }
         
-        public IUpdateContext Context { get; set; }
-
+        
         IBotFrameworkBuilder<TContext> UseLongPolling<T>(
             LongPollingOptions longPollingOptions)
             where T : BackgroundService, IPollingManager<TContext>;
 
-    }
-    
-    public static class BotFrameworkBuilderExtensions
-    {
-        public static IBotFrameworkBuilder<TContext> SetPipeline<TContext>(
-            this IBotFrameworkBuilder<TContext> builder, 
-            Func<IBotPipelineBuilder<TContext>, IBotPipelineBuilder<TContext>> pipeBuilder
-        ) where TContext : IUpdateContext
-        {
-            var pipe = new BotPipelineSettings<TContext>();
-            pipe.PipeSettings = pipeBuilder;
+        IBotFrameworkBuilder<TContext> UseMiddleware<TMiddleware>() where TMiddleware : IUpdateHandler<TContext>;
 
-            builder.Services.AddSingleton(pipe);
-            return builder;
-        }
-    }
+        IBotFrameworkBuilder<TContext> SetPipeline(
+            Func<IBotPipelineBuilder<TContext>, IBotPipelineBuilder<TContext>> pipeBuilder);
 
-    public class BotPipelineSettings<TContext> where TContext : IUpdateContext
-    {
-        public Func<IBotPipelineBuilder<TContext>, IBotPipelineBuilder<TContext>> PipeSettings { get; set; }
+        IBotFrameworkBuilder<TContext> UseStates(Assembly assembly);
     }
 }

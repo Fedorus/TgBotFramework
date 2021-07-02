@@ -19,7 +19,7 @@ namespace TgBotFramework
 {
     public class BaseBot 
     {
-        public ITelegramBotClient Client { get; }
+        public TelegramBotClient Client { get; }
 
         public BaseBot(IOptions<BotSettings> options)
         {

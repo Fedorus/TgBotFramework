@@ -7,7 +7,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\TgBotFramework\TgBotFramework.csproj" />
-      <ProjectReference Include="..\..\TgBotFramework\TgBotFramework.csproj" />
       <ProjectReference Include="..\EchoBotProject\EchoBotProject.csproj" />
     </ItemGroup>
 

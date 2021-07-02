@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
+using TgBotFramework.UpdatePipeline;
 
 namespace TgBotFramework
 {
@@ -19,6 +20,8 @@ namespace TgBotFramework
         {
             var builder = new BotFrameworkBuilder<TContext>(services);
             configure(builder);
+            
+            // getting updates
             builder.Services.AddTransient<TContext>();
             builder.Services.AddTransient<IUpdateContext>(x => x.GetService<TContext>());
             builder.Services.AddSingleton(Channel.CreateUnbounded<IUpdateContext>(
@@ -27,6 +30,11 @@ namespace TgBotFramework
                     SingleWriter = true
                 })
             );
+            
+            //middlewares 
+            services.AddSingleton(builder.UpdatePipelineSettings);
+
+            // update processor
             services.AddHostedService<BotService<TBot, TContext>>();
             services.AddSingleton<TBot>();
 

@@ -1,16 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Reflection;
 using EchoBotProject;
+using EchoBotProject.Handlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using TgBotFramework;
 using TgBotFramework.UpdatePipeline;
@@ -33,13 +31,19 @@ namespace EchoBotWebExample
         {
             services.AddLogging();
             services.Configure<BotSettings>(Configuration.GetSection(nameof(EchoBot)));
+            services.AddScoped<UpdateLogger>();
+            services.AddScoped<GlobalExceptionHandler>();
+            services.AddScoped<MessageHandler>();
+            
             
             services.AddBotService<EchoBot, BaseUpdateContext>(x=> x
                 .UseLongPolling<PollingManager<BaseUpdateContext>>(new LongPollingOptions())
+                .UseMiddleware<UpdateLogger>()
+                .UseMiddleware<GlobalExceptionHandler>()
                 .SetPipeline(x=> x
-                        .Use<UpdateLogger>()
-                        .Use<GlobalExceptionHandler>()
+                        .Use<MessageHandler>()
                     )
+                .UseStates(Assembly.GetAssembly(typeof(EchoBot)))
             );
         }
 
@@ -53,51 +57,10 @@ namespace EchoBotWebExample
 
             app.UseRouting();
 
-            
-            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello World!"); });
             });
-        }
-    }
-
-    public class GlobalExceptionHandler : IUpdateHandler<BaseUpdateContext>
-    {
-        private readonly ILogger<GlobalExceptionHandler> _logger;
-
-        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
-        {
-            _logger = logger;
-        }
-
-        public async Task HandleAsync(BaseUpdateContext context, UpdateDelegate<BaseUpdateContext> next, CancellationToken cancellationToken)
-        {
-            try
-            {
-                await next(context, cancellationToken);
-                _logger.LogInformation("Update {0}, no errors", context.Update.Id);
-            }
-            catch (Exception e)
-            {
-                _logger.LogInformation("Update {0}, has errors {1}", context.Update.Id, e);
-            }
-        }
-    }
-
-    public class UpdateLogger : IUpdateHandler<BaseUpdateContext>
-    {
-        private readonly ILogger<UpdateLogger> _logger;
-
-        public UpdateLogger(ILogger<UpdateLogger> logger)
-        {
-            _logger = logger;
-        }
-
-        public async Task HandleAsync(BaseUpdateContext context, UpdateDelegate<BaseUpdateContext> next, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Update {0}, no errors", context.Update.Id );
-            await next(context, cancellationToken);
         }
     }
 }
