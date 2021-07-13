@@ -38,7 +38,7 @@ namespace TgBotFramework.WrapperExtensions
                 case UpdateType.ChatMember:
                     return update.ChatMember.From.Id;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    return 0;
             }
         }
         public static User GetSender(this Update update)
@@ -74,7 +74,7 @@ namespace TgBotFramework.WrapperExtensions
                 case UpdateType.ChatMember:
                     return update.ChatMember.From;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    return null;
             }
         }
         public static Chat GetChat(this Update update)

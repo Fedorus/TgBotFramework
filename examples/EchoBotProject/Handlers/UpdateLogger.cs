@@ -6,7 +6,7 @@ using TgBotFramework.WrapperExtensions;
 
 namespace EchoBotProject.Handlers
 {
-    public class UpdateLogger : IUpdateHandler<BaseUpdateContext>
+    public class UpdateLogger : IUpdateHandler<BotExampleContext>
     {
         private readonly ILogger<UpdateLogger> _logger;
 
@@ -15,7 +15,7 @@ namespace EchoBotProject.Handlers
             _logger = logger;
         }
 
-        public async Task HandleAsync(BaseUpdateContext context, UpdateDelegate<BaseUpdateContext> next, CancellationToken cancellationToken)
+        public async Task HandleAsync(BotExampleContext context, UpdateDelegate<BotExampleContext> next, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Update {0}, contents:\n{1}", context.Update.Id, context.Update.ToJsonString() );
             await next(context, cancellationToken);

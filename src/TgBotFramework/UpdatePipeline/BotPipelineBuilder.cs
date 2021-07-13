@@ -5,25 +5,29 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using TgBotFramework.DataStructures;
+using TgBotFramework.Exceptions;
 
 namespace TgBotFramework.UpdatePipeline
 {
     public class BotPipelineBuilder<TContext> : IBotPipelineBuilder<TContext>
         where TContext : IUpdateContext
     {
+        public ServiceCollection ServiceCollection { get; }
         internal UpdateDelegate<TContext> UpdateDelegate { get; private set; }
 
         private readonly ICollection<Func<UpdateDelegate<TContext>, UpdateDelegate<TContext>>> _components;
         public ILogger<IBotPipelineBuilder<TContext>> Logger { get; }
 
-        public BotPipelineBuilder(ILogger<IBotPipelineBuilder<TContext>> logger)
+        public BotPipelineBuilder(ILogger<IBotPipelineBuilder<TContext>> logger, ServiceCollection serviceCollection)
         {
+            ServiceCollection = serviceCollection;
             Logger = logger;
             _components = new List<Func<UpdateDelegate<TContext>, UpdateDelegate<TContext>>>();
         }
-        
+
         public UpdateDelegate<TContext> Build()
         {
             UpdateDelegate<TContext> handle = (context, cancellationToken) =>
@@ -39,16 +43,17 @@ namespace TgBotFramework.UpdatePipeline
 
             return UpdateDelegate = handle;
         }
-        
+
         public IBotPipelineBuilder<TContext> Use(Func<UpdateDelegate<TContext>, UpdateDelegate<TContext>> middleware)
         {
             _components.Add(middleware);
             return this;
         }
-        
+
         public IBotPipelineBuilder<TContext> Use<THandler>()
             where THandler : IUpdateHandler<TContext>
         {
+            ServiceCollection.TryAddScoped(typeof(THandler));
             _components.Add(
                 next =>
                     (context, cancellationToken) =>
@@ -56,7 +61,7 @@ namespace TgBotFramework.UpdatePipeline
                         if (context.Services.GetService(typeof(THandler)) is IUpdateHandler<TContext> handler)
                             return handler.HandleAsync(context, next, cancellationToken);
                         else
-                            throw new NullReferenceException(
+                            throw new PipelineException(
                                 $"Unable to resolve handler of type {typeof(THandler).FullName}"
                             );
                     }
@@ -67,11 +72,13 @@ namespace TgBotFramework.UpdatePipeline
 
         internal IBotPipelineBuilder<TContext> Use(Type type)
         {
+            ServiceCollection.TryAddScoped(type);
             if (type.GetInterfaces().All(x => x != typeof(IUpdateHandler<TContext>)))
             {
                 //TODO better type
-                throw new Exception();
+                throw new PipelineException($"Type {type} doesn't implement {typeof(IUpdateHandler<TContext>)}");
             }
+
             _components.Add(
                 next =>
                     (context, cancellationToken) =>
@@ -79,7 +86,7 @@ namespace TgBotFramework.UpdatePipeline
                         if (context.Services.GetService(type) is IUpdateHandler<TContext> handler)
                             return handler.HandleAsync(context, next, cancellationToken);
                         else
-                            throw new NullReferenceException(
+                            throw new PipelineException(
                                 $"Unable to resolve handler of type {type.FullName}"
                             );
                     }
@@ -88,13 +95,16 @@ namespace TgBotFramework.UpdatePipeline
             return this;
         }
 
-        internal IBotPipelineBuilder<TContext> CheckStates(SortedDictionary<string, Type> states)
+        internal IBotPipelineBuilder<TContext> CheckStages(SortedDictionary<string, Type> stages)
         {
-            _components.Add(next=> (context, cancellationToken) =>
+            foreach (KeyValuePair<string,Type> pair in stages)
             {
-                //TODO replace with some other structure
-                var type = states.PrefixSearch(context.UserState.Stage);
-                if (type!=null && context.Services.GetService(type) is IUpdateHandler<TContext> handler)
+                ServiceCollection.AddScoped(pair.Value);
+            }
+            _components.Add(next => (context, cancellationToken) =>
+            {
+                var type = stages.PrefixSearch(context.UserState.Stage);
+                if (type != null && context.Services.GetService(type) is IUpdateHandler<TContext> handler)
                 {
                     return handler.HandleAsync(context, next, cancellationToken);
                 }
@@ -106,6 +116,38 @@ namespace TgBotFramework.UpdatePipeline
 
             return this;
         }
+        internal IBotPipelineBuilder<TContext> CheckCommands(SortedDictionary<string, Type> commands)
+        {
+            foreach (KeyValuePair<string,Type> pair in commands)
+            {
+                ServiceCollection.AddScoped(pair.Value);
+            }
+            _components.Add(next => (context, cancellationToken) =>
+            {
+                if (string.IsNullOrWhiteSpace(context.Update.Message?.Text) || !(context.Update.Message.Text.StartsWith('/') || context.Update.Message.Text.Length>1 ) )
+                {
+                    return next(context, cancellationToken); 
+                }
+                
+                var type = commands.PrefixSearch(context.Update.Message.Text[1..]);
+                if (type != null)
+                {
+                    var service = context.Services.GetService(type);
+                    if (service == null)
+                    {
+                        throw new PipelineException("Class wasn't registered: {0}",type.FullName);
+                    }
+                    var handler = (IUpdateHandler<TContext>)service;
+                    return handler.HandleAsync(context, next, cancellationToken);
+                }
+
+                return next(context, cancellationToken);
+
+            });
+
+            return this;
+        }
+        
 
         public IBotPipelineBuilder<TContext> Use<THandler>(THandler handler)
             where THandler : IUpdateHandler<TContext>
@@ -117,6 +159,78 @@ namespace TgBotFramework.UpdatePipeline
             return this;
         }
 
-       
+        public IBotPipelineBuilder<TContext> UseWhen(
+            Predicate<TContext> predicate,
+            Action<IBotPipelineBuilder<TContext>> configure)
+        {
+            var branchBuilder = new BotPipelineBuilder<TContext>(this.Logger, ServiceCollection);
+            configure(branchBuilder);
+            UpdateDelegate<TContext> branchDelegate = branchBuilder.Build();
+
+            Use(new UseWhenMiddleware<TContext>(predicate, branchDelegate));
+
+            return this;
+        }
+
+
+        public IBotPipelineBuilder<TContext> UseWhen<THandler>(
+            Predicate<TContext> predicate
+        )
+            where THandler : IUpdateHandler<TContext>
+        {
+            ServiceCollection.TryAddScoped(typeof(THandler));
+            var branchDelegate = new BotPipelineBuilder<TContext>(Logger, ServiceCollection).Use<THandler>().Build();
+            Use(new UseWhenMiddleware<TContext>(predicate, branchDelegate));
+
+            return this;
+        }
+
+        public IBotPipelineBuilder<TContext> MapWhen(
+            Predicate<TContext> predicate,
+            Action<IBotPipelineBuilder<TContext>> configure)
+        {
+            var mapBuilder = new BotPipelineBuilder<TContext>(Logger, ServiceCollection);
+            configure(mapBuilder);
+            var mapDelegate = mapBuilder.Build();
+
+            Use(new MapWhenMiddleware<TContext>(predicate, mapDelegate));
+
+            return this;
+        }
+
+        public IBotPipelineBuilder<TContext> MapWhen<THandler>(
+            Predicate<TContext> predicate)
+            where THandler : IUpdateHandler<TContext>
+        {
+            ServiceCollection.TryAddScoped(typeof(THandler));
+            var branchDelegate = new BotPipelineBuilder<TContext>(Logger, ServiceCollection).Use<THandler>().Build();
+
+            Use(new MapWhenMiddleware<TContext>(predicate, branchDelegate));
+
+            return this;
+        }
+
+        public IBotPipelineBuilder<TContext> UseCommand<TCommand>(
+            string command
+        )
+            where TCommand : CommandBase<TContext>
+        {
+           return MapWhen(
+                    ctx => ctx.Bot.CanHandleCommand(command, ctx.Update.Message),
+                    botBuilder => botBuilder.Use<TCommand>()
+                );
+        }
+    }
+
+    public static class Ext
+    {
+        public static IBotPipelineBuilder<TContext> UseCommand2<TCommand, TContext>(this IBotPipelineBuilder<TContext> builder, string command)
+            where TContext : IUpdateContext
+            where TCommand : CommandBase<TContext>, IUpdateHandler<TContext>
+            => builder
+                .MapWhen(
+                    ctx => ctx.Bot.CanHandleCommand(command, ctx.Update.Message),
+                    botBuilder => botBuilder.Use<TCommand>()
+                );
     }
 }

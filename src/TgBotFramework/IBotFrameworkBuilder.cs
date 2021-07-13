@@ -14,7 +14,6 @@ namespace TgBotFramework
         IUpdateContext Context { get; set; }
         UpdatePipelineSettings<TContext> UpdatePipelineSettings { get; set; }
         
-        
         IBotFrameworkBuilder<TContext> UseLongPolling<T>(
             LongPollingOptions longPollingOptions)
             where T : BackgroundService, IPollingManager<TContext>;
@@ -25,5 +24,6 @@ namespace TgBotFramework
             Func<IBotPipelineBuilder<TContext>, IBotPipelineBuilder<TContext>> pipeBuilder);
 
         IBotFrameworkBuilder<TContext> UseStates(Assembly assembly);
+        IBotFrameworkBuilder<TContext> UseCommands(Assembly getAssembly);
     }
 }

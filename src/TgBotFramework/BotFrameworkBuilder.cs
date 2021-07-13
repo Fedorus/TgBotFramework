@@ -54,12 +54,24 @@ namespace TgBotFramework
             return this;
         }
 
-        
+        public IBotFrameworkBuilder<TContext> UseCommands(Assembly assembly)
+        {
+            var types = assembly.GetTypes().Where(x => 
+                    x.GetCustomAttribute<CommandAttribute>()!=null && 
+                    x.BaseType == typeof(CommandBase<TContext>) && 
+                    x.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IUpdateHandler<>)
+                    ))
+                .ToList();
+
+            UpdatePipelineSettings.Commands.AddRange(types);
+            
+            return this;
+        }
+
 
         public BotFrameworkBuilder(IServiceCollection services)
         {
             Services = services;
         }
-
     }
 }

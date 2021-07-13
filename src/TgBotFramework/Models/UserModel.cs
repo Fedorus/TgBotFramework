@@ -1,8 +1,9 @@
-namespace TgBotFramework
+namespace TgBotFramework.Models
 {
-    public class UserState
+    public class UserModel
     {
-        public string Stage { get; set; } = "default";
+        public long Id { get; set; }
+        public string Stage { get; set; } 
         public int Step { get; set; }
         public Role Role { get; set; }
         public string LanguageCode { get; set; }

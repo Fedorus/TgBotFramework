@@ -14,6 +14,7 @@ namespace TgBotFramework
         public IServiceProvider Services { get; set; }
         public TaskCompletionSource Result { get; set; }
         public UserState UserState { get; set; } = new UserState();
+        public BaseBot Bot { get; set; }
         public TelegramBotClient Client { get; set; }
     }
 }

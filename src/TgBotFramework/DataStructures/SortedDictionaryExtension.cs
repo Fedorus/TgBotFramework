@@ -29,6 +29,7 @@ namespace TgBotFramework.DataStructures
 
             return null;
         }
+        
         private static bool CompareStrings(string searchValue, string other)
         {
             for (var i = 1; i < searchValue.Length; i++)

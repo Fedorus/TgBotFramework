@@ -6,7 +6,7 @@ using TgBotFramework;
 
 namespace EchoBotProject.Handlers
 {
-    public class GlobalExceptionHandler : IUpdateHandler<BaseUpdateContext>
+    public class GlobalExceptionHandler : IUpdateHandler<BotExampleContext>
     {
         private readonly ILogger<GlobalExceptionHandler> _logger;
 
@@ -15,7 +15,7 @@ namespace EchoBotProject.Handlers
             _logger = logger;
         }
 
-        public async Task HandleAsync(BaseUpdateContext context, UpdateDelegate<BaseUpdateContext> next, CancellationToken cancellationToken)
+        public async Task HandleAsync(BotExampleContext context, UpdateDelegate<BotExampleContext> next, CancellationToken cancellationToken)
         {
             try
             {
