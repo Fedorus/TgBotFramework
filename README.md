@@ -2,6 +2,8 @@
 
 Make [Telegram.Bot.Framework](https://github.com/TelegramBots/Telegram.Bot.Framework) great again!
 
+read [Wiki](https://github.com/Fedorus/TgBotFramework/wiki) for more details
+
 # Early state
 there is nothing that is guarantied to work, but something definitely works ;)
 
@@ -18,9 +20,9 @@ In this implementation you can get (at least) same pipeline experience as in [Te
 - [x] **Middlewares** - special concept to separate update handling from updateContext configuration.
 - [x] **Attributes** and some reflection magic to handle states and command handlers
 - [ ] Webhook
-- [ ] **DB integration**
-- [ ] **Stages** (stage and step) to describe user`s state. (yeah, state machine out of the box, at least in plans)
-- [ ] **Roles** - it is always needed to separate bot owner from others, right?
+- [x] **DB integration**
+- [x] **Stages** (stage and step) to describe user`s state. (yeah, state machine out of the box, at least in plans)
+- [x] **Roles** - it is always needed to separate bot owner from others, right?
 
   
 #Long-term goals
