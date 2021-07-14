@@ -104,14 +104,21 @@ namespace TgBotFramework.UpdatePipeline
             _components.Add(next => (context, cancellationToken) =>
             {
                 var type = stages.PrefixSearch(context.UserState.Stage);
-                if (type != null && context.Services.GetService(type) is IUpdateHandler<TContext> handler)
+                if (type != null)
                 {
-                    return handler.HandleAsync(context, next, cancellationToken);
-                }
-                else
-                {
-                    return next(context, cancellationToken);
-                }
+                    var realType = type;
+                    if (type.IsGenericTypeDefinition)
+                    {
+                        realType = type.MakeGenericType(typeof(TContext));
+                    }
+                    if(context.Services.GetService(realType) is IUpdateHandler<TContext> handler)
+                        return handler.HandleAsync(context, next, cancellationToken);
+                    else
+                    {
+                        throw new PipelineException("Class wasn't registered: {0}", realType.FullName);
+                    }
+                } 
+                return next(context, cancellationToken);
             });
 
             return this;
@@ -132,13 +139,18 @@ namespace TgBotFramework.UpdatePipeline
                 var type = commands.PrefixSearch(context.Update.Message.Text[1..]);
                 if (type != null)
                 {
-                    var service = context.Services.GetService(type);
-                    if (service == null)
+                    var realType = type;
+                    if (type.IsGenericTypeDefinition)
                     {
-                        throw new PipelineException("Class wasn't registered: {0}",type.FullName);
+                        realType = type.MakeGenericType(typeof(TContext));
                     }
-                    var handler = (IUpdateHandler<TContext>)service;
-                    return handler.HandleAsync(context, next, cancellationToken);
+
+                    if (context.Services.GetService(realType) is IUpdateHandler<TContext> handler)
+                        return handler.HandleAsync(context, next, cancellationToken);
+                    else
+                    {
+                        throw new PipelineException("Class wasn't registered: {0}", realType.FullName);
+                    }
                 }
 
                 return next(context, cancellationToken);

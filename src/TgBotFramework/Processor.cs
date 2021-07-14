@@ -74,11 +74,17 @@ namespace TgBotFramework
             using var scope = serviceProvider.CreateScope();
             foreach (var type in pipe.ServiceCollection)
             {
-                if (scope.ServiceProvider.GetService(type.ImplementationType) == null)
+                Type typeToResolve = type.ImplementationType;
+                if (type.ServiceType.IsGenericTypeDefinition)
                 {
-                    _logger.LogCritical("There is no service type of {0} in DI", type.ImplementationType.FullName);
+                    typeToResolve = type.ServiceType.MakeGenericType(typeof(TContext));
+                }
+                
+                if (scope.ServiceProvider.GetService(typeToResolve) == null)
+                {
+                    _logger.LogCritical("There is no service type of {0} in DI", typeToResolve.FullName);
                     throw new PipelineException(
-                        string.Format("There is no service type of {0} in DI", type.ImplementationType.FullName));
+                        string.Format("There is no service type of {0} in DI", typeToResolve.FullName));
                 }
             }
         }

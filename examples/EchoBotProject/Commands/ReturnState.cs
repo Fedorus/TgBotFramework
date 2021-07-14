@@ -7,7 +7,7 @@ using TgBotFramework.WrapperExtensions;
 
 namespace EchoBotProject.Commands
 {
-    [Command("state")]
+    [Command("/state")]
     public class ReturnState : CommandBase<BaseUpdateContext>
     {
         public override async Task HandleAsync(BaseUpdateContext context, UpdateDelegate<BaseUpdateContext> next, string[] args, CancellationToken cancellationToken)

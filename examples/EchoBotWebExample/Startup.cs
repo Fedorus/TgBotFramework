@@ -4,6 +4,7 @@ using System.Reflection;
 using EchoBotProject;
 using EchoBotProject.Commands;
 using EchoBotProject.Handlers;
+using EchoBotProject.States;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -39,6 +40,8 @@ namespace EchoBotWebExample
             services.AddScoped<StartCommand>();
             services.AddScoped<ReturnState>();
             services.AddScoped<PublicChatNotification>();
+            services.AddScoped<GameState<BotExampleContext>>();
+            services.AddScoped<PlayCommand>();
 
             services.AddDbContext<BotFrameworkContext>(x=>x.UseSqlite("Data Source=BotFramework.sqlite"));
 
