@@ -20,12 +20,16 @@ In this implementation you can get (at least) same pipeline experience as in [Te
 - [x] **Middlewares** - special concept to separate update handling from updateContext configuration.
 - [x] **Attributes** and some reflection magic to handle states and command handlers
 - [ ] Webhook
-- [x] **DB integration**
+- [x] **DB integration** EF and MongoDB support
 - [x] **Stages** (stage and step) to describe user`s state. (yeah, state machine out of the box, at least in plans)
 - [x] **Roles** - it is always needed to separate bot owner from others, right?
+- [ ] Localization out of the box 
 
   
 #Long-term goals
-- [ ] **Dashboard** 
+- [ ] **Dashboard** (un plans: update rate, main exceptions, abilyti to add custom stats, for example number of updates by type/run time)
 - [ ] Better **Logging**
 - [ ] Fully tested (I wouldn't count on that one 😭) 
+- [ ] Posibility to run update processing in parallel mode (and smart parallel mode) 
+- [ ] Better EF support
+- [ ] Caching state/user info. 
