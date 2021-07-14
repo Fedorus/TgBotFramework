@@ -233,16 +233,4 @@ namespace TgBotFramework.UpdatePipeline
                 );
         }
     }
-
-    public static class Ext
-    {
-        public static IBotPipelineBuilder<TContext> UseCommand2<TCommand, TContext>(this IBotPipelineBuilder<TContext> builder, string command)
-            where TContext : IUpdateContext
-            where TCommand : CommandBase<TContext>, IUpdateHandler<TContext>
-            => builder
-                .MapWhen(
-                    ctx => ctx.Bot.CanHandleCommand(command, ctx.Update.Message),
-                    botBuilder => botBuilder.Use<TCommand>()
-                );
-    }
 }
