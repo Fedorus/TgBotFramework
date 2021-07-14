@@ -23,7 +23,8 @@ In this implementation you can get (at least) same pipeline experience as in [Te
 - [x] **DB integration** EF and MongoDB support
 - [x] **Stages** (stage and step) to describe user`s state. (yeah, state machine out of the box, at least in plans)
 - [x] **Roles** - it is always needed to separate bot owner from others, right?
-- [ ] Localization out of the box 
+- [ ] Localization out of the box
+- [ ] Auto add class to DI with scope from attribute
 
   
 #Long-term goals
