@@ -19,7 +19,7 @@ In this implementation you can get (at least) same pipeline experience as in [Te
 - [x] Longpolling
 - [x] **Middlewares** - special concept to separate update handling from updateContext configuration.
 - [x] **Attributes** and some reflection magic to handle states and command handlers
-- [ ] Webhook
+- [x] Webhook
 - [x] **DB integration** EF and MongoDB support
 - [x] **Stages** (stage and step) to describe user`s state. (yeah, state machine out of the box, at least in plans)
 - [x] **Roles** - it is always needed to separate bot owner from others, right?
