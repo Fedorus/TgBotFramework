@@ -58,7 +58,5 @@ namespace TgBotFramework
                 RegexOptions.IgnoreCase
             );
         }
-        
-        
     }
 }

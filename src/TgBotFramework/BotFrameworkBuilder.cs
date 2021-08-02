@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Channels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TgBotFramework.Attributes;
@@ -9,14 +10,36 @@ using TgBotFramework.UpdatePipeline;
 
 namespace TgBotFramework
 {
-    public class BotFrameworkBuilder<TContext> : IBotFrameworkBuilder<TContext> where TContext : IUpdateContext
+    public class BotFrameworkBuilder<TContext, TBot> : IBotFrameworkBuilder<TContext>
+        where TContext : class, IUpdateContext
+        where TBot : BaseBot
     {
-        public IServiceCollection Services { get; }
+        public IServiceCollection Services { get; set; }
         public IUpdateContext Context { get; set; }
 
         public UpdatePipelineSettings<TContext> UpdatePipelineSettings { get; set; } =
             new UpdatePipelineSettings<TContext>();
 
+        public BotFrameworkBuilder(IServiceCollection services)
+        {
+            Services = services;
+            Services.AddTransient<TContext>();
+            Services.AddTransient<IUpdateContext>(x => x.GetService<TContext>());
+            Services.AddSingleton(Channel.CreateUnbounded<IUpdateContext>(
+                new UnboundedChannelOptions()
+                {
+                    SingleWriter = true
+                })
+            );
+            
+            services.AddSingleton(UpdatePipelineSettings);
+
+            // update processor
+            services.AddHostedService<BotService<TBot, TContext>>();
+            services.AddSingleton<TBot>();
+            services.AddSingleton<BaseBot>(provider => provider.GetService<TBot>());
+        }
+        
         public IBotFrameworkBuilder<TContext> UseLongPolling<T>(LongPollingOptions longPollingOptions) where T : BackgroundService, IPollingManager<TContext>
         {
             Services.AddHostedService<T>();
@@ -31,9 +54,7 @@ namespace TgBotFramework
 
             return this;
         }
-        public IBotFrameworkBuilder<TContext> SetPipeline
-        (
-            Func<IBotPipelineBuilder<TContext>, IBotPipelineBuilder<TContext>> pipeBuilder) 
+        public IBotFrameworkBuilder<TContext> SetPipeline(Func<IBotPipelineBuilder<TContext>, IBotPipelineBuilder<TContext>> pipeBuilder) 
         {
             UpdatePipelineSettings.PipeSettings = pipeBuilder;
             
@@ -66,12 +87,6 @@ namespace TgBotFramework
             UpdatePipelineSettings.Commands.AddRange(types);
             
             return this;
-        }
-
-
-        public BotFrameworkBuilder(IServiceCollection services)
-        {
-            Services = services;
         }
     }
 }

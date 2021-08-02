@@ -19,25 +19,8 @@ namespace TgBotFramework
             where TBot : BaseBot
             where TContext : BaseUpdateContext 
         {
-            var builder = new BotFrameworkBuilder<TContext>(services);
+            var builder = new BotFrameworkBuilder<TContext, TBot>(services);
             configure(builder);
-            
-            // getting updates
-            builder.Services.AddTransient<TContext>();
-            builder.Services.AddTransient<IUpdateContext>(x => x.GetService<TContext>());
-            builder.Services.AddSingleton(Channel.CreateUnbounded<IUpdateContext>(
-                new UnboundedChannelOptions()
-                {
-                    SingleWriter = true
-                })
-            );
-            
-            //middlewares 
-            services.AddSingleton(builder.UpdatePipelineSettings);
-
-            // update processor
-            services.AddHostedService<BotService<TBot, TContext>>();
-            services.AddSingleton<TBot>();
 
             return services;
         }
