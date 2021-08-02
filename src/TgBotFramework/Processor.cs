@@ -133,7 +133,7 @@ namespace TgBotFramework
                     if (update.Result != null)
                     {
                         //TODO: callback on finish
-                        //Task.Run(() => update.Result.TrySetResult());
+                        Task.Run(() => update.Result.TrySetResult());
                     }
                 }
                 catch (Exception e)
