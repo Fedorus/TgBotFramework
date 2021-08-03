@@ -7,6 +7,12 @@ namespace TgBotFramework.WrapperExtensions
 {
     public static class UpdateExtensions
     {
+        /// <summary>
+        /// Returns sender ID for updates with sender ID, 0 otherwise. Exception in case of new update type.   
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns>Id or 0 (for updates that doesn`t have sender ID</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Throws exception if there is some new update.Type</exception>
         public static long GetSenderId(this Update update)
         {
             switch (update.Type)
@@ -37,10 +43,19 @@ namespace TgBotFramework.WrapperExtensions
                     return update.PollAnswer.User.Id;
                 case UpdateType.ChatMember:
                     return update.ChatMember.From.Id;
+                case UpdateType.MyChatMember:
+                    return update.MyChatMember.From.Id;
                 default:
-                    return 0;
+                    throw new ArgumentOutOfRangeException();
             }
         }
+        
+        /// <summary>
+        /// Returns sender for updates with sender, null otherwise. Exception in case of new update type.   
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns>User or null (for updates that doesn't have sender</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Throws exception if there is some new update.Type</exception>
         public static User GetSender(this Update update)
         {
             switch (update.Type)
@@ -69,14 +84,21 @@ namespace TgBotFramework.WrapperExtensions
                     return null;
                 case UpdateType.PollAnswer:
                     return update.PollAnswer.User;
-                case UpdateType.MyChatMember:
-                    return update.MyChatMember.From;
                 case UpdateType.ChatMember:
                     return update.ChatMember.From;
+                case UpdateType.MyChatMember:
+                    return update.MyChatMember.From;
                 default:
-                    return null;
+                    throw new ArgumentOutOfRangeException();
             }
         }
+        
+        /// <summary>
+        /// Returns chat for updates with chat, null otherwise. Exception in case of new update type.   
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns>Chat or null (for updates that doesn't have chat</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Throws exception if there is some new update.Type</exception>
         public static Chat GetChat(this Update update)
         {
             switch (update.Type)
@@ -102,13 +124,18 @@ namespace TgBotFramework.WrapperExtensions
                 case UpdateType.PreCheckoutQuery:
                 case UpdateType.Poll:
                 case UpdateType.PollAnswer:
-                default:
                     return null;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            
         }
 
+        /// <summary>
+        /// Just a simple way to display update
+        /// </summary>
+        /// <param name="update"></param>
+        /// <param name="formatted"></param>
+        /// <returns></returns>
         public static string ToJsonString(this Update update, bool formatted = true)
         {
             return JsonConvert.SerializeObject(update, formatted? Formatting.Indented : Formatting.None);
