@@ -55,6 +55,12 @@ namespace TgBotFramework
                         
                         await _channel.WriteAsync(updateContext, cancellationToken);
                         messageOffset = update.Id + 1;
+
+                        if (_pollingOptions.WaitForResult)
+                        {
+                            updateContext.Result = new TaskCompletionSource();
+                            await updateContext.Result.Task;
+                        }
                     }
                 }
                 catch (Exception e)
