@@ -9,7 +9,7 @@ namespace TgBotFramework.Attributes
 
         public ScopeAttribute(ScopeEnum scope)
         {
-            this.Scope = Scope;
+            this.Scope = scope;
         }
     }
     public enum ScopeEnum
