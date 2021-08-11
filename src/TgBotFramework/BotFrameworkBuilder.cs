@@ -65,9 +65,8 @@ namespace TgBotFramework
         {
             var types = assembly.GetTypes().Where(x => 
                     x.GetCustomAttribute<StateAttribute>()!=null && 
-                    x.BaseType == typeof(BasicState) && 
-                    x.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IUpdateHandler<>)
-                ))
+                    x.BaseType?.GetGenericTypeDefinition() == typeof(BasicState<>)
+                )
                 .ToList();
 
             UpdatePipelineSettings.States.AddRange(types);
