@@ -65,9 +65,8 @@ namespace EchoBotWebExample
                         .MapWhen(In.PrivateChat, branch => branch
                             .UseCommand<StartCommand>("start")
                             .Use<MessageHandler>()
-                            
                         )
-                        .MapWhen<PublicChatNotification>(x=> In.GroupChat(x) || In.SupergroupChat(x))
+                        .MapWhen<PublicChatNotification>(context=> In.GroupChat(context) || In.SupergroupChat(context))
                         // this was same as, just demonstration how you can combine such statements with your own
                         //.MapWhen<PublicChatNotification>(In.GroupOrSupergroup)
                     )
