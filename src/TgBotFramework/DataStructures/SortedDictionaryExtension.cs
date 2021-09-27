@@ -7,6 +7,9 @@ namespace TgBotFramework.DataStructures
     {
         public static Type PrefixSearch(this SortedDictionary<string, Type> dictionary, string searchValue)
         {
+            if (searchValue is null or "")
+                return null;
+            
             foreach (KeyValuePair<string, Type> pair in dictionary)
             {
                 if (pair.Key[0] < searchValue[0])

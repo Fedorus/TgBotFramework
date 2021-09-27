@@ -1,22 +1,26 @@
 using System.Threading;
 using System.Threading.Tasks;
+using EchoBotProject.StateMachineBoilerplate;
 using MongoDB.Driver;
-using TgBotFramework.Models;
+using TgBotFramework;
 using TgBotFramework.WrapperExtensions;
 
-namespace TgBotFramework.Data.MongoDB
+namespace EchoBotProject.Data.MongoDB
 {
     public class UserStateMapper<TContext> : IUpdateHandler<TContext> where TContext : IUpdateContext
     {
+        private readonly UserStageManager _manager;
         private readonly IMongoCollection<UserModel> _db;
-        public UserStateMapper(IMongoDatabase db)
+        public UserStateMapper(IMongoDatabase db, UserStageManager manager)
         {
+            _manager = manager;
             _db = db.GetCollection<UserModel>("Framework.UserModel");
         }
 
         public async Task HandleAsync(TContext context, UpdateDelegate<TContext> next, CancellationToken cancellationToken)
         {
             var userId = context.Update.GetSenderId();
+            context.UserState = _manager;
             UserModel userObj = null;
             if (userId != 0)
             {
@@ -34,7 +38,7 @@ namespace TgBotFramework.Data.MongoDB
     
             await next(context, cancellationToken);
 
-            if (UserModelMapper.MapStateToModel(context.UserState, userObj))
+            if (userObj != null && UserModelMapper.MapStateToModel(context.UserState, userObj))
             {
                 await _db.ReplaceOneAsync(x => x.Id == userId, userObj, cancellationToken: cancellationToken);
             }

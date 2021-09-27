@@ -15,7 +15,7 @@ namespace EchoBotProject.Commands
         {
             context.UserState.Stage = "game";
             await context.Client.SendTextMessageAsync(context.Update.GetChat(),
-                "Okay, lets play. You are in the room, find exit", cancellationToken: cancellationToken);
+                "Okay, lets play. You are in the room, find exit",  cancellationToken: cancellationToken);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace TgBotFramework.WrapperExtensions
                 case UpdateType.EditedMessage:
                     return update.EditedMessage.From.Id;
                 case UpdateType.ChannelPost:
-                    return update.ChannelPost.From.Id;
+                    return update.ChannelPost.From?.Id ?? 0;
                 case UpdateType.EditedChannelPost:
                     return update.EditedChannelPost.From.Id;
                 case UpdateType.ShippingQuery:

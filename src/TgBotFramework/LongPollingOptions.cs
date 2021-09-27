@@ -18,5 +18,10 @@ namespace TgBotFramework
         /// Will be implemented later
         /// </summary>
         public bool WaitForResult { get; set; } = false;
+
+        /// <summary>
+        /// Prints requests to current ILogger<>
+        /// </summary>
+        public bool DebugOutput { get; set; } = false;
     }
 }

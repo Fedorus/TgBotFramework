@@ -13,7 +13,7 @@ namespace TgBotFramework
         public HttpContext HttpContext { get; set; }
         public IServiceProvider Services { get; set; }
         public TaskCompletionSource Result { get; set; }
-        public UserState UserState { get; set; }
+        public IUserState UserState { get; set; }
         public BaseBot Bot { get; set; }
         public TelegramBotClient Client { get; set; }
     }
