@@ -43,8 +43,13 @@ namespace EchoBotWebExample
             services.AddScoped<GlobalExceptionHandler>();
             
 
+            // register deps for pipeline
             services.ServicesForExamplePipelineBuilder();
-            services.AddDbContext<BotFrameworkContext>(x=>x.UseSqlite("Data Source=BotFramework.sqlite"));
+            
+            
+            services.AddDbContext<BotFrameworkContext>(x =>
+                x.UseSqlite("Data Source=BotFramework.db",
+                    builder => builder.MigrationsAssembly("EchoBotProject")));
 
             // set your bot and context (inherit from basic one)
             services.AddBotService<EchoBot, BotExampleContext>(x => x
@@ -54,8 +59,10 @@ namespace EchoBotWebExample
 
                 .UseMiddleware<GlobalExceptionHandler>()
                 
+                
                 // you may use this approach to logging but be aware that not all update objects can be converted back to json
                 .UseMiddleware<UpdateLogger>()
+                .UseMiddleware<EFLogger>()
                 // if you want to use states... 
                 .UseStates(Assembly.GetAssembly(typeof(EchoBot)))
                 .UseEF()
@@ -64,6 +71,7 @@ namespace EchoBotWebExample
 
                 // set update processing pipeline (executes last)
                 .SetPipeline(pipelineBuilder => pipelineBuilder
+                     // in echo bot project
                     .ExamplePipelineBuilder()
                 )
             );

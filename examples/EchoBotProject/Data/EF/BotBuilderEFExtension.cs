@@ -10,9 +10,9 @@ namespace EchoBotProject.Data.EF
         {
             builder.Services.AddScoped<UserStateMapperMiddleware<TContext>>();
             builder.Services.AddScoped<UserStageManager>();
+            builder.Services.AddScoped<EFLogger>();
             builder.UpdatePipelineSettings.Middlewares.Add(typeof(UserStateMapperMiddleware<TContext>));
             return builder;
         }
     }
-    
 }
