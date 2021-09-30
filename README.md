@@ -1,4 +1,6 @@
 # TgBotFramework
+[![package](https://img.shields.io/nuget/v/TgBotFramework)](https://www.nuget.org/packages/TgBotFramework/)
+[![licence](https://img.shields.io/github/license/Fedorus/TgBotFramework)]()
 
 Make [Telegram.Bot.Framework](https://github.com/TelegramBots/Telegram.Bot.Framework) great again!
 
@@ -20,7 +22,7 @@ In this implementation you can get (at least) same pipeline experience as in [Te
 - [x] **Middlewares** - special concept to separate update handling from updateContext configuration.
 - [x] **Attributes** and some reflection magic to handle states and command handlers
 - [x] Webhook
-- [x] **DB integration** EF and MongoDB support
+- [x] **DB integration** EF and MongoDB examples
 - [x] **Stages** (stage and step) to describe user`s state. (yeah, state machine out of the box, at least in plans)
 - [x] **Roles** - it is always needed to separate bot owner from others, right?
 - [ ] Localization out of the box
