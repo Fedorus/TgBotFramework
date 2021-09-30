@@ -2,6 +2,8 @@
 [![package](https://img.shields.io/nuget/v/TgBotFramework)](https://www.nuget.org/packages/TgBotFramework/)
 [![licence](https://img.shields.io/github/license/Fedorus/TgBotFramework)]()
 
+![Lines of code](https://img.shields.io/tokei/lines/github/Fedorus/TgBotFramework)
+
 Make [Telegram.Bot.Framework](https://github.com/TelegramBots/Telegram.Bot.Framework) great again!
 
 read [Wiki](https://github.com/Fedorus/TgBotFramework/wiki) for more details
