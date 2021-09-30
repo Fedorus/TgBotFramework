@@ -32,6 +32,6 @@ In this implementation you can get (at least) same pipeline experience as in [Te
 - [ ] Better **Logging**
 - [ ] Fully tested (I wouldn't count on that one 😭) 
 - [ ] Posibility to run update processing in parallel mode (and smart parallel mode) 
-- [ ] Better EF support
-- [ ] Caching state/user info.
+- [x] Better EF support
+- [x] Caching state/user info. (with EF)
 - [ ] Comments and refactorings
