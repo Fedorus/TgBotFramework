@@ -1,2 +1,8 @@
+V 0.3
+Removed all db-specific stuff to EchoBot project.
+Since its realy hard to implement fully changeble scheme and db support for states. Its better to have it separatly in project that can be example and boilerplate at same time...
+Started building EF models to keep state, chat and user statuses, update logs, etc.
+Created enum that represents possible state variations (1perUser, 1perChat, 1 perUser in each chat).
+
 V 0.2
 Added webhook support
