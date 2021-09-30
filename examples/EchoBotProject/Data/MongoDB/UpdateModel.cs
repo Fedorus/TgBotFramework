@@ -1,6 +1,4 @@
-using Telegram.Bot.Requests;
-
-namespace TgBotFramework.Models
+namespace EchoBotProject.Data.MongoDB
 {
     public class UpdateModel
     {

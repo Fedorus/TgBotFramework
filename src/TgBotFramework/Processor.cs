@@ -27,7 +27,6 @@ namespace TgBotFramework
         private readonly TBot _bot;
         private readonly ChannelReader<IUpdateContext> _updatesQueue;
         private readonly UpdateDelegate<TContext> _updateHandler;
-        private SortedDictionary<string, Type> _stages;
         private SortedDictionary<string,Type> _commands;
 
         public BotService(ILogger<BotService<TBot, TContext>> logger,
@@ -89,18 +88,12 @@ namespace TgBotFramework
             }
         }
 
+        
         private void SetUpStagesInPipeline(UpdatePipelineSettings<TContext> updatePipelineSettings, BotPipelineBuilder<TContext> pipe)
         {
-            _stages = new SortedDictionary<string, Type>(StringComparer.Ordinal);
-            foreach (var state in updatePipelineSettings.States)
-            {
-                var attribute = state.GetCustomAttribute<StateAttribute>();
-                Debug.Assert(attribute != null, nameof(attribute) + " != null");
-                _stages.Add(attribute.Stage, state);
-            }
             // check for other
-            if (_stages.Count != 0)
-                pipe.CheckStages(_stages);
+            if (updatePipelineSettings.States.Count != 0)
+                pipe.CheckStages(updatePipelineSettings.States);
         }
 
         private void SetUpCommandsInPipeline(UpdatePipelineSettings<TContext> updatePipelineSettings, BotPipelineBuilder<TContext> pipe)

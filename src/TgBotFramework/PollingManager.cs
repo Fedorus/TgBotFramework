@@ -8,10 +8,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using Telegram.Bot.Args;
 using TgBotFramework.UpdatePipeline;
 
 namespace TgBotFramework
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class PollingManager<TContext> : BackgroundService, IPollingManager<TContext>
         where TContext : IUpdateContext
     {
@@ -19,7 +21,7 @@ namespace TgBotFramework
         private readonly LongPollingOptions _pollingOptions;
         private readonly IServiceProvider _serviceProvider;
         private readonly ChannelWriter<IUpdateContext> _channel;
-        private readonly TelegramBotClient Client;
+        private readonly TelegramBotClient _client;
         
 
         public PollingManager(
@@ -33,17 +35,24 @@ namespace TgBotFramework
             _pollingOptions = pollingOptions;
             _serviceProvider = serviceProvider;
             _channel = channel.Writer;
-            Client = new TelegramBotClient(botOptions.Value.ApiToken, baseUrl: botOptions.Value.BaseUrl);
+            _client = new TelegramBotClient(botOptions.Value.ApiToken, baseUrl: botOptions.Value.BaseUrl);
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            await _client.DeleteWebhookAsync(cancellationToken: cancellationToken);
+            if (_pollingOptions.DebugOutput)
+            {
+                _client.OnApiResponseReceived += ReceiveLogger;
+                _client.OnMakingApiRequest += SendLogger;
+            }
+
             int messageOffset = 0;
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    var updates = await Client.GetUpdatesAsync(messageOffset, 0, _pollingOptions.Timeout,
+                    var updates = await _client.GetUpdatesAsync(messageOffset, 0, _pollingOptions.Timeout,
                         _pollingOptions.AllowedUpdates, cancellationToken);
 
                     foreach (var update in updates)
@@ -68,6 +77,21 @@ namespace TgBotFramework
                     _logger.LogError(e, "Error while polling in " + nameof(PollingManager<TContext>));
                 }
             }
+        }
+
+        private async ValueTask SendLogger(ITelegramBotClient botclient, ApiRequestEventArgs args, CancellationToken cancellationtoken)
+        {
+            _logger.LogInformation("Sending method {0}, content:\n\t{1}",
+                args.MethodName,
+                await  args.HttpContent.ReadAsStringAsync());
+        }
+
+        private async ValueTask ReceiveLogger(ITelegramBotClient client, ApiResponseEventArgs args, CancellationToken token)
+        {
+            _logger.LogInformation("Received response, method {0}, code {1} content:\n\t{2}",
+                args.ApiRequestEventArgs.MethodName,
+                args.ResponseMessage.StatusCode,
+                await args.ResponseMessage.Content.ReadAsStringAsync(token));
         }
     }
 

@@ -1,8 +1,10 @@
-namespace TgBotFramework.Models
+using TgBotFramework;
+
+namespace EchoBotProject.Data
 {
     public static class UserModelMapper
     {
-        public static void MapModelToState(UserState state, UserModel model)
+        public static void MapModelToState(IUserState state, UserModel model)
         {
             state.Role = model.Role;
             state.Stage = model.Stage;
@@ -10,7 +12,7 @@ namespace TgBotFramework.Models
             state.LanguageCode = model.LanguageCode;
         }
         
-        public static bool MapStateToModel(UserState contextUserState, UserModel userDbObject)
+        public static bool MapStateToModel(IUserState contextUserState, UserModel userDbObject)
         {
             bool result = false;
             if (userDbObject == null)

@@ -48,5 +48,10 @@ namespace TgBotFramework.Webhook
         /// Pass True to drop all pending updates
         /// </summary>
         public bool? DropPendingUpdates { get; set; }
+        
+        /// <summary>
+        /// Prints requests to current ILogger<>
+        /// </summary>
+        public bool DebugOutput { get; set; } = false;
     }
 }

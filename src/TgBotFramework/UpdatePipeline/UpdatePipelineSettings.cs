@@ -7,7 +7,7 @@ namespace TgBotFramework.UpdatePipeline
     {
         public List<Type> Middlewares { get; } = new List<Type>();
         public Func<IBotPipelineBuilder<TContext>, IBotPipelineBuilder<TContext>> PipeSettings { get; set; }
-        public List<Type> States { get; set; } = new List<Type>();
+        public SortedDictionary<string, Type> States { get; set; } = new ();
         public List<Type> Commands { get; set; } = new List<Type>();
     }
 }

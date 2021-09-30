@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EchoBotProject;
 using EchoBotProject.Commands;
+using EchoBotProject.Data.MongoDB;
 using EchoBotProject.Handlers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,6 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Telegram.Bot.Types;
 using TgBotFramework;
-using TgBotFramework.Data.MongoDB;
 using TgBotFramework.UpdatePipeline;
 
 namespace echoBotExample
@@ -39,7 +39,7 @@ namespace echoBotExample
                     services.AddScoped<MessageHandler>();
                     services.AddScoped<StartCommand>();
                     services.AddScoped<ReturnState>();
-                    services.AddScoped<PublicChatNotification>();
+                    services.AddScoped<PublicChatEcho>();
 
 
                     services.AddBotService<EchoBot, BotExampleContext>(x => x
@@ -63,7 +63,7 @@ namespace echoBotExample
                                         .Use<MessageHandler>()
 
                                     )
-                                    .MapWhen<PublicChatNotification>(x => In.GroupChat(x) || In.SupergroupChat(x))
+                                    .MapWhen<PublicChatEcho>(x => In.GroupChat(x) || In.SupergroupChat(x))
                                 // this was same as, just demonstration how you can combine such statements with your own
                                 //.MapWhen<PublicChatNotification>(In.GroupOrSupergroup)
                             )

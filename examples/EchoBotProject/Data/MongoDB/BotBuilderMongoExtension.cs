@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using EchoBotProject.StateMachineBoilerplate;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB;
 using MongoDB.Driver;
-using MongoDB.Driver.Core.Configuration;
-using TgBotFramework.Models;
+using TgBotFramework;
 
-namespace TgBotFramework.Data.MongoDB
+namespace EchoBotProject.Data.MongoDB
 {
     public static class BotBuilderMongoExtension
     {
@@ -20,8 +18,9 @@ namespace TgBotFramework.Data.MongoDB
             
             
             builder.Services.AddScoped<UserStateMapper<TContext>>();
+            builder.Services.AddScoped<UserStageManager>();
             builder.UpdatePipelineSettings.Middlewares.Add(typeof(UserStateMapper<TContext>));
-           /* var updateModel = db.GetCollection<UpdateModel>("Framework.UpdateModel");
+            /*var updateModel = db.GetCollection<UpdateModel>("Framework.UpdateModel");
             HandleUpdateModel(updateModel);*/
             
             return builder;

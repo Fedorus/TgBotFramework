@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Channels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TgBotFramework.Attributes;
+using TgBotFramework.StageManaging;
 using TgBotFramework.UpdatePipeline;
 
 namespace TgBotFramework
@@ -65,12 +67,18 @@ namespace TgBotFramework
         {
             var types = assembly.GetTypes().Where(x => 
                     x.GetCustomAttribute<StateAttribute>()!=null && 
-                    x.BaseType == typeof(BasicState) && 
-                    x.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IUpdateHandler<>)
-                ))
+                    x.BaseType?.GetGenericTypeDefinition() == typeof(BasicState<>)
+                )
                 .ToList();
 
-            UpdatePipelineSettings.States.AddRange(types);
+            foreach (var type in types)
+            {
+                var attribute = type.GetCustomAttribute<StateAttribute>();
+                Debug.Assert(attribute != null, nameof(attribute) + " != null");
+                UpdatePipelineSettings.States.Add(attribute.Stage, type);
+            }
+
+            Services.AddSingleton<StageManager>(new StageManager(UpdatePipelineSettings.States));
             
             return this;
         }

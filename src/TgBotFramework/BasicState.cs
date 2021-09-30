@@ -1,25 +1,23 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TgBotFramework
 {
-    public abstract class BasicState
+    public abstract class BasicState<TContext> : IUpdateHandler<TContext> where TContext : IUpdateContext 
     {
-        public IUpdateContext State { get;  }
-
-        public BasicState(IUpdateContext state)
-        {
-            State = state;
-        }
-
-        public virtual async Task Enter()
+        public virtual async Task Enter(TContext state)
         {
             
         }
         
-        public virtual async Task Exit()
+        public virtual async Task Exit(TContext state)
         {
-            State.UserState.Stage = "default";
-            State.UserState.Step = 0;
+            state.UserState.Stage = "default";
+            state.UserState.Step = 0;
         }
+
+        public abstract Task HandleAsync(TContext context, UpdateDelegate<TContext> next,
+            CancellationToken cancellationToken);
+
     }
 }
