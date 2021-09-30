@@ -41,6 +41,7 @@ namespace EchoBotWebExample
             services.Configure<BotSettings>(Configuration.GetSection(nameof(EchoBot)));
             services.AddScoped<UpdateLogger>();
             services.AddScoped<GlobalExceptionHandler>();
+            services.AddScoped<StopwatchHandler>();
             
 
             // register deps for pipeline
@@ -58,7 +59,7 @@ namespace EchoBotWebExample
                 // add services that fill your updateContext, handling exceptions, logging updates, etc
 
                 .UseMiddleware<GlobalExceptionHandler>()
-                
+                .UseMiddleware<StopwatchHandler>()
                 
                 // you may use this approach to logging but be aware that not all update objects can be converted back to json
                 .UseMiddleware<UpdateLogger>()
