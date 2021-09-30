@@ -13,5 +13,6 @@ namespace EchoBotProject.Data.EF.Models
         public string Stage { get; set; } 
         public long Step { get; set; }
         public Role Role { get; set; }
+        public string Language { get; set; }
     }
 }

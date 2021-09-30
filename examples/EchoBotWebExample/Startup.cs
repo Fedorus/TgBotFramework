@@ -62,10 +62,10 @@ namespace EchoBotWebExample
                 
                 // you may use this approach to logging but be aware that not all update objects can be converted back to json
                 .UseMiddleware<UpdateLogger>()
-                .UseMiddleware<EFLogger>()
                 // if you want to use states... 
                 .UseStates(Assembly.GetAssembly(typeof(EchoBot)))
-                .UseEF()
+                
+                .UseEF(StateStrategy.PerUser)
                 // if you don`t wanna setup commands in pipeline
                 .UseCommands(Assembly.GetAssembly(typeof(EchoBot)))
 
@@ -79,7 +79,8 @@ namespace EchoBotWebExample
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, BotFrameworkContext db)
         {
-            db.Database.EnsureCreated();
+            //db.Database.EnsureCreated();
+            db.Database.Migrate();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

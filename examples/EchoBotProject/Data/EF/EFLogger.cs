@@ -36,7 +36,7 @@ namespace EchoBotProject.Data.EF
                 {
                     userInDb = (await _db.Users.AddAsync(new User()
                     {
-                        FirstName = user.FirstName, State = new State(), IsBot = user.IsBot, Username = user.Username,
+                        FirstName = user.FirstName, State = new State() { Language = user.LanguageCode}, IsBot = user.IsBot, Username = user.Username,
                         LanguageCode = user.LanguageCode, LastName = user.LastName, UserId = user.Id,
                         PrivateChatStatus = chat?.Type == ChatType.Private
                             ? PrivateChatStatus.Active
