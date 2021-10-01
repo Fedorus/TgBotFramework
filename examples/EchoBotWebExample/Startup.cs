@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EchoBotProject;
@@ -42,6 +41,7 @@ namespace EchoBotWebExample
             services.AddScoped<UpdateLogger>();
             services.AddScoped<GlobalExceptionHandler>();
             services.AddScoped<StopwatchHandler>();
+            services.AddScoped<SimpleUserRequestLimiter>();
             
             // register deps for pipeline
             services.ServicesForExamplePipelineBuilder();
@@ -59,6 +59,8 @@ namespace EchoBotWebExample
                 .UseMiddleware<GlobalExceptionHandler>()
                 .UseMiddleware<StopwatchHandler>()
                 
+                //not stateless handler, needs rewriting...
+                .UseMiddleware<SimpleUserRequestLimiter>()
                 // you may use this approach to logging but be aware that not all update objects can be converted back to json
                 // .UseMiddleware<UpdateLogger>()
                 
