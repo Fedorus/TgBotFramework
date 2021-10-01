@@ -43,11 +43,9 @@ namespace EchoBotWebExample
             services.AddScoped<GlobalExceptionHandler>();
             services.AddScoped<StopwatchHandler>();
             
-
             // register deps for pipeline
             services.ServicesForExamplePipelineBuilder();
-            
-            
+
             services.AddDbContext<BotFrameworkContext>(x =>
                 x.UseSqlite("Data Source=BotFramework.db",
                     builder => builder.MigrationsAssembly("EchoBotProject")));
@@ -62,7 +60,8 @@ namespace EchoBotWebExample
                 .UseMiddleware<StopwatchHandler>()
                 
                 // you may use this approach to logging but be aware that not all update objects can be converted back to json
-                .UseMiddleware<UpdateLogger>()
+                // .UseMiddleware<UpdateLogger>()
+                
                 // if you want to use states... 
                 .UseStates(Assembly.GetAssembly(typeof(EchoBot)))
                 

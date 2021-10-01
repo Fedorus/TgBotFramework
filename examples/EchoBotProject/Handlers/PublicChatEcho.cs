@@ -18,7 +18,7 @@ namespace EchoBotProject.Handlers
 
         public async Task HandleAsync(BotExampleContext context, UpdateDelegate<BotExampleContext> next, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("This update {0} was from public chat {1}", context.Update.Id, context.Update.GetChat());
+            _logger.LogInformation("Update {0} was from public chat {1}", context.Update.Id, context.Update.GetChat());
         }
     }
 }

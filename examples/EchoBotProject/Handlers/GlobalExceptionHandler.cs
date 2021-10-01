@@ -15,16 +15,16 @@ namespace EchoBotProject.Handlers
             _logger = logger;
         }
 
-        public async Task HandleAsync(BotExampleContext context, UpdateDelegate<BotExampleContext> next, CancellationToken cancellationToken)
+        public async Task HandleAsync(BotExampleContext context, UpdateDelegate<BotExampleContext> next,
+            CancellationToken cancellationToken)
         {
             try
             {
                 await next(context, cancellationToken);
-                _logger.LogInformation("Update {0}, no errors", context.Update.Id);
             }
             catch (Exception e)
             {
-                _logger.LogInformation("Update {0}, has errors {1}", context.Update.Id, e);
+                _logger.LogInformation(e,"[{0}] has errors {1}", context.Update.Id, e);
             }
         }
     }
