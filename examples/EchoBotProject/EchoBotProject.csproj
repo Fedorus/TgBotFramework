@@ -5,6 +5,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Resources\ru\game.stage.json" />
+      <None Remove="Resources\ru\publicChat.handler.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\ru\game.stage.json" />
+      <EmbeddedResource Include="Resources\ru\publicChat.handler.json" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\..\src\TgBotFramework\TgBotFramework.csproj" />
     </ItemGroup>
 

@@ -25,5 +25,8 @@ namespace TgBotFramework
 
         IBotFrameworkBuilder<TContext> UseStates(Assembly assembly);
         IBotFrameworkBuilder<TContext> UseCommands(Assembly getAssembly);
+
+        IBotFrameworkBuilder<TContext> AddMessageReader<TUpdateHandler>(string rootDirectory = "Resources", string language = "ru", Assembly resourceAssembly = null)
+            where TUpdateHandler : class;
     }
 }

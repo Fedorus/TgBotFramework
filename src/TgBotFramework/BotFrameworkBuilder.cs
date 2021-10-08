@@ -7,6 +7,7 @@ using System.Threading.Channels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TgBotFramework.Attributes;
+using TgBotFramework.MessageReader;
 using TgBotFramework.StageManaging;
 using TgBotFramework.UpdatePipeline;
 
@@ -42,6 +43,13 @@ namespace TgBotFramework
             services.AddSingleton<BaseBot>(provider => provider.GetService<TBot>());
         }
         
+        public IBotFrameworkBuilder<TContext> AddMessageReader<TUpdateHandler>(string rootDirectory = "Resources", string language = "ru", Assembly resourceAssembly = null) 
+            where TUpdateHandler : class
+        {
+            Services.AddSingleton<IMessageReader<TUpdateHandler, TContext>>(provider => new MessageReader<TUpdateHandler, TContext>(rootDirectory, language, resourceAssembly));
+            return this;
+        }
+
         public IBotFrameworkBuilder<TContext> UseLongPolling<T>(LongPollingOptions longPollingOptions) where T : BackgroundService, IPollingManager<TContext>
         {
             Services.AddHostedService<T>();
