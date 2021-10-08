@@ -15,9 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Telegram.Bot;
 using TgBotFramework;
-using TgBotFramework.UpdatePipeline;
 
 namespace EchoBotWebExample
 {
@@ -42,11 +40,9 @@ namespace EchoBotWebExample
             services.AddScoped<UpdateLogger>();
             services.AddScoped<GlobalExceptionHandler>();
             
-
             // register deps for pipeline
             services.ServicesForExamplePipelineBuilder();
-            
-            
+
             services.AddDbContext<BotFrameworkContext>(x =>
                 x.UseSqlite("Data Source=BotFramework.db",
                     builder => builder.MigrationsAssembly("EchoBotProject")));
@@ -59,7 +55,9 @@ namespace EchoBotWebExample
 
                 .UseMiddleware<GlobalExceptionHandler>()
                 
-                
+                .AddMessageReader<PublicChatEcho>()
+                .AddMessageReader<GameState<BotExampleContext>>()
+
                 // you may use this approach to logging but be aware that not all update objects can be converted back to json
                 .UseMiddleware<UpdateLogger>()
                 // if you want to use states... 
