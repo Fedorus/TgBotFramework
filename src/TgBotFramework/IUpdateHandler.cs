@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace TgBotFramework
 {
     /// <summary>
-    /// Processes an update
+    /// Part of the pipeline. Processes an update
     /// </summary>
     public interface IUpdateHandler<TContext> where TContext : IUpdateContext
     {

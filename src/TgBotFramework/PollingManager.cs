@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using TgBotFramework.UpdatePipeline;
@@ -44,7 +46,6 @@ namespace TgBotFramework
             if (_pollingOptions.DebugOutput)
             {
                 _client.OnApiResponseReceived += ReceiveLogger;
-                _client.OnMakingApiRequest += SendLogger;
             }
 
             int messageOffset = 0;
@@ -79,19 +80,25 @@ namespace TgBotFramework
             }
         }
 
-        private async ValueTask SendLogger(ITelegramBotClient botclient, ApiRequestEventArgs args, CancellationToken cancellationtoken)
-        {
-            _logger.LogInformation("Sending method {0}, content:\n\t{1}",
-                args.MethodName,
-                await  args.HttpContent.ReadAsStringAsync());
-        }
+
 
         private async ValueTask ReceiveLogger(ITelegramBotClient client, ApiResponseEventArgs args, CancellationToken token)
         {
-            _logger.LogInformation("Received response, method {0}, code {1} content:\n\t{2}",
+            if (args.ApiRequestEventArgs.MethodName == "getUpdates")
+            {
+                var message = await args.ResponseMessage.Content.ReadAsStringAsync(token);
+                JToken jobj = JObject.Parse(message)["result"];
+                foreach (var item in jobj)
+                {
+                    //_logger.LogInformation($"[{item["update_id"]}] Content:\n{{1}}", item);
+                    _logger.LogInformation("[{0}] Content:\n{1}", item["update_id"].ToString(), item);
+                }
+            }
+
+        /*    _logger.LogInformation("Received response, method {0}, code {1} content:\n\t{2}",
                 args.ApiRequestEventArgs.MethodName,
                 args.ResponseMessage.StatusCode,
-                await args.ResponseMessage.Content.ReadAsStringAsync(token));
+                await args.ResponseMessage.Content.ReadAsStringAsync(token));  */
         }
     }
 

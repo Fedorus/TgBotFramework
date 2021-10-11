@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using CommonHandlers;
 using EchoBotProject;
 using EchoBotProject.Commands;
 using EchoBotProject.Handlers;
@@ -36,7 +37,7 @@ namespace WebhookTest
             services.AddLogging();
             services.Configure<BotSettings>(Configuration.GetSection(nameof(EchoBot)));
             services.AddScoped<UpdateLogger>();
-            services.AddScoped<GlobalExceptionHandler>();
+            services.AddScoped<GlobalExceptionHandler<BotExampleContext>>();
             services.AddScoped<MessageHandler>();
             services.AddScoped<StartCommand>();
             services.AddScoped<ReturnState>();
@@ -53,7 +54,7 @@ namespace WebhookTest
                 //.UseLongPolling<PollingManager<BotExampleContext>>(new LongPollingOptions())
                 // add services that fill your updateContext, handling exceptions, logging updates, etc
                 .UseMiddleware<UpdateLogger>()
-                .UseMiddleware<GlobalExceptionHandler>()
+                .UseMiddleware<GlobalExceptionHandler<BotExampleContext>>()
                 
                 // if you want to use states... 
                 .UseStates(Assembly.GetAssembly(typeof(EchoBot)))

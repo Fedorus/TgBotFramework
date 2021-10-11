@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CommonHandlers;
 using EchoBotProject;
 using EchoBotProject.Commands;
-using EchoBotProject.Data.EF;
 using EchoBotProject.Handlers;
 using EchoBotProject.States;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using TgBotFramework;
+using TgBotFramework.Data.EF;
 using TgBotFramework.UpdatePipeline;
 
 namespace EchoBotWebExample
@@ -40,13 +40,13 @@ namespace EchoBotWebExample
             );
             services.Configure<BotSettings>(Configuration.GetSection(nameof(EchoBot)));
             services.AddScoped<UpdateLogger>();
-            services.AddScoped<GlobalExceptionHandler>();
+            services.AddScoped<GlobalExceptionHandler<BotExampleContext>>();
+            services.AddScoped<StopwatchHandler>();
+            services.AddScoped<SimpleUserRequestLimiter>();
             
-
             // register deps for pipeline
             services.ServicesForExamplePipelineBuilder();
-            
-            
+
             services.AddDbContext<BotFrameworkContext>(x =>
                 x.UseSqlite("Data Source=BotFramework.db",
                     builder => builder.MigrationsAssembly("EchoBotProject")));
@@ -57,15 +57,18 @@ namespace EchoBotWebExample
                 .UseLongPolling<PollingManager<BotExampleContext>>(new LongPollingOptions() {DebugOutput = true} )
                 // add services that fill your updateContext, handling exceptions, logging updates, etc
 
-                .UseMiddleware<GlobalExceptionHandler>()
+                .UseMiddleware<GlobalExceptionHandler<BotExampleContext>>()
+                .UseMiddleware<StopwatchHandler>()
                 
-                
+                //not stateless handler, needs rewriting...
+                .UseMiddleware<SimpleUserRequestLimiter>()
                 // you may use this approach to logging but be aware that not all update objects can be converted back to json
-                .UseMiddleware<UpdateLogger>()
+                // .UseMiddleware<UpdateLogger>()
+                
                 // if you want to use states... 
                 .UseStates(Assembly.GetAssembly(typeof(EchoBot)))
                 
-                .UseEF(StateStrategy.PerUser)
+                .UseEF<BotExampleContext, ExampleDbContext>(StateStrategy.PerUser)
                 // if you don`t wanna setup commands in pipeline
                 .UseCommands(Assembly.GetAssembly(typeof(EchoBot)))
 

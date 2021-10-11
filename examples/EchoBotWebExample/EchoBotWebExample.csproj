@@ -6,7 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\TgBotFramework.Data.EF\TgBotFramework.Data.EF.csproj" />
       <ProjectReference Include="..\..\src\TgBotFramework\TgBotFramework.csproj" />
+      <ProjectReference Include="..\CommonHandlers\CommonHandlers.csproj" />
       <ProjectReference Include="..\EchoBotProject\EchoBotProject.csproj" />
     </ItemGroup>
 
@@ -19,10 +21,6 @@
       </PackageReference>
       <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.7" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Migrations" />
     </ItemGroup>
 
 </Project>

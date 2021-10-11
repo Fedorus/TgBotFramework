@@ -20,7 +20,6 @@ namespace EchoBotProject.Handlers
         {
             try
             {
-
                 _logger.LogInformation("Update {0}, contents:\n\t{1}", context.Update.Id, context.Update.ToJsonString());
             }
             catch(Exception e)

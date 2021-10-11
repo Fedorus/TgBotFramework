@@ -68,7 +68,8 @@ namespace TgBotFramework.Webhook
             {
                 ctx.HttpContext = context;
                 ctx.Result = new TaskCompletionSource();
-                await ctx.Result.Task;
+                //await ctx.Result.Task;
+                await Task.WhenAny(ctx.Result.Task, Task.Delay(2000));
             }
         }
     }

@@ -1,8 +1,7 @@
 using System;
-using TgBotFramework;
 using TgBotFramework.StageManaging;
 
-namespace EchoBotProject.StateMachineBoilerplate
+namespace TgBotFramework
 {
     public class UserStageManager : IUserState
     {

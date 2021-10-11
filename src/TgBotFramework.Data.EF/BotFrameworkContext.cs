@@ -1,8 +1,7 @@
-using EchoBotProject.Data;
-using EchoBotProject.Data.EF.Models;
 using Microsoft.EntityFrameworkCore;
+using TgBotFramework.Data.EF.Models;
 
-namespace EchoBotProject
+namespace TgBotFramework.Data.EF
 {
     public class BotFrameworkContext : DbContext
     {
@@ -16,7 +15,5 @@ namespace EchoBotProject
         public DbSet<State> States { get; set; }
         public DbSet<Update> Updates { get; set; }
         public DbSet<User> Users { get; set; }
-        
-        public DbSet<UserModel> UserModels { get; set; }
     }
 }
