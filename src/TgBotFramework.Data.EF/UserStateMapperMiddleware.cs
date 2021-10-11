@@ -1,13 +1,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using EchoBotProject.Data.EF.Models;
-using EchoBotProject.StateMachineBoilerplate;
-using Telegram.Bot.Types.Enums;
-using TgBotFramework;
+using TgBotFramework.Data.EF.Models;
 using TgBotFramework.WrapperExtensions;
 
-namespace EchoBotProject.Data.EF
+namespace TgBotFramework.Data.EF
 {
     public class UserStateMapperMiddleware<TContext> : IUpdateHandler<TContext> where TContext : IUpdateContext
     {
@@ -51,7 +48,6 @@ namespace EchoBotProject.Data.EF
             }
 
             /*
-            
             UserModel userDbObject = null;
             if (userId != 0)
             {

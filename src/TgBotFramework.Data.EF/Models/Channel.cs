@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace EchoBotProject.Data.EF.Models
+namespace TgBotFramework.Data.EF.Models
 {
     public class Channel
     {

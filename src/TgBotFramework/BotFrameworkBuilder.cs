@@ -63,6 +63,11 @@ namespace TgBotFramework
             return this;
         }
 
+        public IBotFrameworkBuilder<TContext> UseStates()
+        {
+            return UseStates(Assembly.GetAssembly(typeof(TContext)));
+        }
+
         public IBotFrameworkBuilder<TContext> UseStates(Assembly assembly)
         {
             var types = assembly.GetTypes().Where(x => 
@@ -81,6 +86,11 @@ namespace TgBotFramework
             Services.AddSingleton<StageManager>(new StageManager(UpdatePipelineSettings.States));
             
             return this;
+        }
+
+        public IBotFrameworkBuilder<TContext> UseCommands()
+        {
+            return UseCommands(Assembly.GetAssembly(typeof(TContext)));
         }
 
         public IBotFrameworkBuilder<TContext> UseCommands(Assembly assembly)

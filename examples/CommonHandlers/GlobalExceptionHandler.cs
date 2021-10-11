@@ -1,21 +1,21 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TgBotFramework;
 
-namespace EchoBotProject.Handlers
+namespace CommonHandlers
 {
-    public class GlobalExceptionHandler : IUpdateHandler<BotExampleContext>
+    public class GlobalExceptionHandler<T> : IUpdateHandler<T> where T : IUpdateContext
     {
-        private readonly ILogger<GlobalExceptionHandler> _logger;
+        private readonly ILogger<GlobalExceptionHandler<T>> _logger;
 
-        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler<T>> logger)
         {
             _logger = logger;
         }
 
-        public async Task HandleAsync(BotExampleContext context, UpdateDelegate<BotExampleContext> next,
+        public async Task HandleAsync(T context, UpdateDelegate<T> next,
             CancellationToken cancellationToken)
         {
             try

@@ -1,4 +1,4 @@
-namespace EchoBotProject.Data.EF
+namespace TgBotFramework.Data.EF
 {
     public enum StateStrategy
     {

@@ -6,7 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\TgBotFramework.Data.EF\TgBotFramework.Data.EF.csproj" />
       <ProjectReference Include="..\..\src\TgBotFramework\TgBotFramework.csproj" />
+      <ProjectReference Include="..\CommonHandlers\CommonHandlers.csproj" />
       <ProjectReference Include="..\EchoBotProject\EchoBotProject.csproj" />
     </ItemGroup>
 
