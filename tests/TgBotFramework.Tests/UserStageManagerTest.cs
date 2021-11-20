@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using EchoBotProject.StateMachineBoilerplate;
 using NUnit.Framework;
 using TgBotFramework.StageManaging;
 
