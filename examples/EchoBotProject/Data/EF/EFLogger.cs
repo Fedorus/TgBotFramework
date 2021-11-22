@@ -63,14 +63,8 @@ namespace EchoBotProject.Data.EF
             }
             updateObj.Type = update.Type;
             updateObj.DateTime = DateTime.UtcNow;
-            try
-            {
-                updateObj.UpdateObject = update.ToJsonString();
-            }
-            catch
-            {
-                //TODO fix Telegram.Bot until_date field serialization 
-            }
+            
+            updateObj.UpdateObject = update.ToJsonString();
 
 
             await _db.Updates.AddAsync(updateObj, cancellationToken);
