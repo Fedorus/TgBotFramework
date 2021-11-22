@@ -83,7 +83,7 @@ namespace TgBotFramework
         {
             _logger.LogInformation("Sending method {0}, content:\n\t{1}",
                 args.MethodName,
-                await  args.HttpContent.ReadAsStringAsync());
+                await args.HttpContent.ReadAsStringAsync(cancellationtoken));
         }
 
         private async ValueTask ReceiveLogger(ITelegramBotClient client, ApiResponseEventArgs args, CancellationToken token)

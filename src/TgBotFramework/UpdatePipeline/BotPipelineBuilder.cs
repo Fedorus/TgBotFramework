@@ -227,7 +227,7 @@ namespace TgBotFramework.UpdatePipeline
         )
             where TCommand : CommandBase<TContext>
         {
-           return MapWhen(
+            return MapWhen(
                     ctx => ctx.Bot.CanHandleCommand(command, ctx.Update.Message),
                     botBuilder => botBuilder.Use<TCommand>()
                 );
