@@ -8,7 +8,7 @@ namespace TgBotFramework.Tests
     [TestFixture]
     public class StageManagerTest
     {
-        private StageManager _sm;
+        private readonly StageManager _sm;
         public StageManagerTest()
         {
             var sortedDictionary = new SortedDictionary<string, Type>()

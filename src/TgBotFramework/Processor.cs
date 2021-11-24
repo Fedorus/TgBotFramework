@@ -87,15 +87,12 @@ namespace TgBotFramework
                 }
             }
         }
-
-        
         private void SetUpStagesInPipeline(UpdatePipelineSettings<TContext> updatePipelineSettings, BotPipelineBuilder<TContext> pipe)
         {
             // check for other
             if (updatePipelineSettings.States.Count != 0)
                 pipe.CheckStages(updatePipelineSettings.States);
         }
-
         private void SetUpCommandsInPipeline(UpdatePipelineSettings<TContext> updatePipelineSettings, BotPipelineBuilder<TContext> pipe)
         {
             _commands = new SortedDictionary<string, Type>(StringComparer.Ordinal);
@@ -132,7 +129,6 @@ namespace TgBotFramework
                 catch (Exception e)
                 {
                     _logger.LogCritical(e, "Oops");
-                    
                 }
             }
         }
