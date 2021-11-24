@@ -16,14 +16,14 @@ namespace TgBotFramework.UpdatePipeline
         where TContext : IUpdateContext
     {
         public ServiceCollection ServiceCollection { get; }
-        internal UpdateDelegate<TContext> UpdateDelegate { get; private set; }
+        private UpdateDelegate<TContext> UpdateDelegate { get; set; }
 
         private readonly ICollection<Func<UpdateDelegate<TContext>, UpdateDelegate<TContext>>> _components;
         public ILogger<IBotPipelineBuilder<TContext>> Logger { get; }
 
         public BotPipelineBuilder(ILogger<IBotPipelineBuilder<TContext>> logger, ServiceCollection serviceCollection)
         {
-            ServiceCollection = serviceCollection;
+            ServiceCollection = serviceCollection ?? throw new ArgumentNullException(nameof(serviceCollection));
             Logger = logger;
             _components = new List<Func<UpdateDelegate<TContext>, UpdateDelegate<TContext>>>();
         }
@@ -32,7 +32,7 @@ namespace TgBotFramework.UpdatePipeline
         {
             UpdateDelegate<TContext> handle = (context, cancellationToken) =>
             {
-                Logger.LogWarning("No handler for update {0} of type {1}.", context.Update.Id, context.Update.Type);
+                Logger?.LogWarning("No handler for update {0} of type {1}.", context.Update.Id, context.Update.Type);
                 return Task.FromResult(1);
             };
 
@@ -75,7 +75,6 @@ namespace TgBotFramework.UpdatePipeline
             ServiceCollection.TryAddScoped(type);
             if (type.GetInterfaces().All(x => x != typeof(IUpdateHandler<TContext>)))
             {
-                //TODO better type
                 throw new PipelineException($"Type {type} doesn't implement {typeof(IUpdateHandler<TContext>)}");
             }
 

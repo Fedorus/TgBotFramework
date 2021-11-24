@@ -22,23 +22,22 @@ namespace TgBotFramework.Tests
             _userStateManager = new UserStageManager(new StageManager(sortedDictionary));
         }
 
-        [Test]
-        public void ShouldPass()
+        [TestCase("")]
+        [TestCase("default")]
+        [TestCase("addPartner")]
+        [TestCase("addPartner_some_id")]
+        [TestCase("authorization")]
+        [TestCase(null)]
+        public void ShouldPass(string param)
         {
-            _userStateManager.Stage = "";
-            _userStateManager.Stage = null;
-            _userStateManager.Stage = "default";
-            _userStateManager.Stage = "addPartner";
-            _userStateManager.Stage = "addPartner_some_id";
-            _userStateManager.Stage = "authorization";
-            Assert.Pass();  
+            _userStateManager.Stage = param;
         }
 
-        [Test]
-        public void ShouldNotPass()
+        [TestCase("Not passed")]
+        [TestCase("add")]
+        public void ShouldNotPass(string param)
         {
-            Assert.Catch(() => { _userStateManager.Stage = "Not passed"; });
-            Assert.Catch(() => { _userStateManager.Stage = "add"; });
+            Assert.Catch(() => { _userStateManager.Stage = param; });
         }
 
     }

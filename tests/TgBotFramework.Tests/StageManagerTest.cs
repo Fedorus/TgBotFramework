@@ -8,8 +8,8 @@ namespace TgBotFramework.Tests
     [TestFixture]
     public class StageManagerTest
     {
-        [Test]
-        public void ShouldPass()
+        private StageManager _sm;
+        public StageManagerTest()
         {
             var sortedDictionary = new SortedDictionary<string, Type>()
             {
@@ -17,21 +17,29 @@ namespace TgBotFramework.Tests
                 {"addPartner", typeof(object)},
                 {"addCustomer", typeof(object)},
             };
-            
-            StageManager sm = new StageManager(sortedDictionary);
-            
-            Assert.True(sm.Check(""));
-            Assert.True(sm.Check(null));
-            Assert.True(sm.Check("default"));
-            
-            Assert.True(sm.Check("authorization"));
-            Assert.True(sm.Check("authorization_1"));
-            Assert.True(sm.Check("addPartner"));
-            Assert.True(sm.Check("addPartner_0"));
-            Assert.True(sm.Check("addCustomer"));
-            Assert.True(sm.Check("addCustomer_0"));
-            
-            Assert.False(sm.Check("add"));
+            _sm = new StageManager(sortedDictionary);
+        }
+
+        [Theory]
+        [TestCase("")]
+        [TestCase(null)]
+        [TestCase("default")]
+        [TestCase("authorization")]
+        [TestCase("authorization_1")]
+        [TestCase("addPartner")]
+        [TestCase("addPartner_0")]
+        [TestCase("addCustomer")]
+        [TestCase("addCustomer_0")]
+        [TestCase("")]
+        public void Should_be_true(string param)
+        {
+            Assert.True(_sm.Check(param));
+        }
+        
+        [TestCase("add")]
+        public void Should_be_false(string param)
+        {
+            Assert.False(_sm.Check(param));
         }
     }
 }

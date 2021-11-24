@@ -29,7 +29,13 @@ namespace TgBotFramework
             Client = new TelegramBotClient(options.Value.ApiToken, baseUrl: options.Value.BaseUrl);
             Username = options.Value.Username;
         }
-        
+
+        public BaseBot(string token, string username)
+        {
+            Client = new TelegramBotClient(token);
+            Username = username;
+        }
+
         public bool CanHandleCommand(string commandName, Message message)
         {
             if (string.IsNullOrWhiteSpace(commandName))
@@ -37,26 +43,23 @@ namespace TgBotFramework
             if (commandName.StartsWith("/"))
                 throw new ArgumentException("Command name must not start with '/'.", nameof(commandName));
 
-            if (message is null)
+            if (message == null)
                 return false;
 
-            {
-                bool isTextMessage = message.Text != null;
-                if (!isTextMessage)
-                    return false;
-            }
+            if (message.Text != null && message.Entities is { Length: > 0 })
+                return message.Entities[0].Type == MessageEntityType.BotCommand && message.Entities[0].Offset == 0 && Regex.IsMatch(
+                    message.Text.Substring(message.Entities[0].Offset, message.Entities[0].Length),
+                    $@"^/{commandName}(?:@{Username})?$",
+                    RegexOptions.IgnoreCase);
+            
+            if (message.Caption != null && message.CaptionEntities is { Length: > 0 })
+                return message.CaptionEntities[0].Type == MessageEntityType.BotCommand && message.CaptionEntities[0].Offset == 0 &&
+                       Regex.IsMatch(
+                        message.Caption.Substring(message.CaptionEntities[0].Offset, message.CaptionEntities[0].Length),
+                        $@"^/{commandName}(?:@{Username})?$",
+                        RegexOptions.IgnoreCase);
 
-            {
-                bool isCommand = message.Entities?.FirstOrDefault()?.Type == MessageEntityType.BotCommand;
-                if (!isCommand)
-                    return false;
-            }
-
-            return Regex.IsMatch(
-                message.EntityValues.First(),
-                $@"^/{commandName}(?:@{Username})?$",
-                RegexOptions.IgnoreCase
-            );
+            return false;
         }
     }
 }
