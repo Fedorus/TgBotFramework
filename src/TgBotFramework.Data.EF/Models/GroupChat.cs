@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Telegram.Bot.Types.Enums;
 
-namespace EchoBotProject.Data.EF.Models
+namespace TgBotFramework.Data.EF.Models
 {
     public class GroupChat
     {

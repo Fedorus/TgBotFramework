@@ -23,7 +23,9 @@ namespace TgBotFramework
         IBotFrameworkBuilder<TContext> SetPipeline(
             Func<IBotPipelineBuilder<TContext>, IBotPipelineBuilder<TContext>> pipeBuilder);
 
+        IBotFrameworkBuilder<TContext> UseStates();
         IBotFrameworkBuilder<TContext> UseStates(Assembly assembly);
+        IBotFrameworkBuilder<TContext> UseCommands();
         IBotFrameworkBuilder<TContext> UseCommands(Assembly getAssembly);
     }
 }

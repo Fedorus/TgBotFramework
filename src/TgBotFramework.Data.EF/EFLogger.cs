@@ -1,17 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using EchoBotProject.Data.EF.Models;
-using EchoBotProject.Handlers;
-using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types.Enums;
-using TgBotFramework;
+using TgBotFramework.Data.EF.Models;
 using TgBotFramework.WrapperExtensions;
-using ChatMemberStatus = EchoBotProject.Data.EF.Models.ChatMemberStatus;
+using ChatMemberStatus = TgBotFramework.Data.EF.Models.ChatMemberStatus;
 
-namespace EchoBotProject.Data.EF
+namespace TgBotFramework.Data.EF
 {
-    public class EFLogger: IUpdateHandler<BotExampleContext>
+    public class EFLogger<TContext>: IUpdateHandler<TContext> where TContext : IUpdateContext
     {
         private readonly BotFrameworkContext _db;
 
@@ -20,7 +17,7 @@ namespace EchoBotProject.Data.EF
             _db = db;
         }
 
-        public async Task HandleAsync(BotExampleContext context, UpdateDelegate<BotExampleContext> next, CancellationToken cancellationToken)
+        public async Task HandleAsync(TContext context, UpdateDelegate<TContext> next, CancellationToken cancellationToken)
         {
             var update = context.Update;
 

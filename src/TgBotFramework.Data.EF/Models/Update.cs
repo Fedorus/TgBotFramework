@@ -1,9 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using MongoDB.Driver;
 using Telegram.Bot.Types.Enums;
 
-namespace EchoBotProject.Data.EF.Models
+namespace TgBotFramework.Data.EF.Models
 {
     public class Update
     {

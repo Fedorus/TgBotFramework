@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonHandlers;
 using EchoBotProject;
 using EchoBotProject.Commands;
 using EchoBotProject.Data.MongoDB;
@@ -35,7 +36,7 @@ namespace echoBotExample
                     services.AddLogging();
                     services.Configure<BotSettings>(config.GetSection(nameof(EchoBot)));
                     services.AddScoped<UpdateLogger>();
-                    services.AddScoped<GlobalExceptionHandler>();
+                    services.AddScoped<GlobalExceptionHandler<BotExampleContext>>();
                     services.AddScoped<MessageHandler>();
                     services.AddScoped<StartCommand>();
                     services.AddScoped<ReturnState>();
@@ -48,7 +49,7 @@ namespace echoBotExample
                         .UseLongPolling<PollingManager<BotExampleContext>>(new LongPollingOptions())
                         // add services that fill your updateContext, handling exceptions, logging updates, etc
                         .UseMiddleware<UpdateLogger>()
-                        .UseMiddleware<GlobalExceptionHandler>()
+                        .UseMiddleware<GlobalExceptionHandler<BotExampleContext>>()
 
                         // if you want to use states... 
                         .UseStates(Assembly.GetAssembly(typeof(EchoBot)))

@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\TgBotFramework\TgBotFramework.csproj" />
+      <ProjectReference Include="..\CommonHandlers\CommonHandlers.csproj" />
       <ProjectReference Include="..\EchoBotProject\EchoBotProject.csproj" />
     </ItemGroup>
 

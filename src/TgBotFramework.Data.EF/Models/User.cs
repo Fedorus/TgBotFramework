@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EchoBotProject.Data.EF.Models
+namespace TgBotFramework.Data.EF.Models
 {
     public class User
     {

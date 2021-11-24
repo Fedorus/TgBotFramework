@@ -1,7 +1,4 @@
-using System;
-using TgBotFramework;
-
-namespace EchoBotProject.Data.EF.Models
+namespace TgBotFramework.Data.EF.Models
 {
     public class State
     {
